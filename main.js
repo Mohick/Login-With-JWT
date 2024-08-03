@@ -11,9 +11,11 @@ const mainController = require("./src/MVC/Controller/Main Controll")
 const runReadJson = require('./src/Config/JSON/Json.js')
 const configMorgan = require('./src/Config/Morgan/Morgan')
 const connectMongoDB = require('./src/Config/Connect  MongoDB/Connect Mongoose')
-const port = process.env.EXPRESS__PORT || 3000
+const env = require('./src/Config/Object ENV/Object ENV.js')
+const port = env.EXPRESS_PORT || 3000
 app.use(cookieParser())
 // config session-cookies middle
+
 
 //config morgan 
 configMorgan(app)

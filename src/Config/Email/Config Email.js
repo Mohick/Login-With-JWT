@@ -1,12 +1,13 @@
 
 const emailjs = require("@emailjs/nodejs");
+const env = require("../Object ENV/Object ENV");
 
 
 const SendEmail = (templateParams) => {
     emailjs
-        .send(process.env.EXPRESS__SERVICE__EMAIL, process.env.EXPRESS__TEMPLATE__EMAIL, templateParams, {
-            publicKey: process.env.EXPRESS__PUBLIC__KEY__EMAIL,
-            privateKey: process.env.EXPRESS__PRAVATE__KEY__EMAIL,
+        .send(env.EXPRESS_SERVICE_EMAIL, env.EXPRESS_TEMPLATE_EMAIL, templateParams, {
+            publicKey: env.EXPRESS_PUBLIC_KEY_EMAIL,
+            privateKey: env.EXPRESS_PRIVATE_KEY_EMAIL,
         })
         .then(
             (response) => {

@@ -37,7 +37,8 @@ class VerifiedAccounts {
             const { verificationCode } = req.body;
             const { authToken } = req.cookies
             verifyJWT(authToken, async (err, authToken) => {
-                const { email } = authToken
+                const { email, exp } = authToken
+
                 if (email && verificationCode) {
                     // Find the verified account using the provided email
                     const verifiedAccount = await ModelVerifiedSchema.findOne({ email });
@@ -85,40 +86,47 @@ class VerifiedAccounts {
         try {
             const { authToken } = req.cookies
             verifyJWT(authToken, async (err, authToken) => {
-                const { email, _id } = authToken
-                if (email && _id) {
-                    // Find the verified account using the provided email
-                    const [account, verification] = await Promise.all([
-                        ModelAccountschema.findOne({ email, _id }),  // Corrected with query object
-                        ModelVerifiedSchema.find({ email })     // Corrected with query object
-                    ])
-                    if (account && account.email) {
+                const { email, _id, exp } = authToken
+                if (Number(exp) > Number(new Date)) {
+                    if (email && _id) {
+                        // Find the verified account using the provided email
+                        const [account, verification] = await Promise.all([
+                            ModelAccountschema.findOne({ email, _id }),  // Corrected with query object
+                            ModelVerifiedSchema.find({ email })     // Corrected with query object
+                        ])
+                        if (account && account.email) {
 
-                        if (verification.length > 0) {
+                            if (verification.length > 0) {
+                                res.json({
+                                    valid: false,
+                                    message: "Please wait approximately 2 minutes for the next verification code."
+                                });
+                            } else {
+                                callCreateVerifyAccount(account.username, account.email); // Assuming createVerifyAccount is a method in the same context
+                                res.json({
+                                    valid: true,
+                                    message: "Verification code has been sent again."
+                                });
+                            }
+
+                        } else {
+                            // Handle the case where the account is not found
                             res.json({
                                 valid: false,
-                                message: "Please wait approximately 2 minutes for the next verification code."
-                            });
-                        } else {
-                            callCreateVerifyAccount(account.username, account.email); // Assuming createVerifyAccount is a method in the same context
-                            res.json({
-                                valid: true,
-                                message: "Verification code has been sent again."
+                                message: "Account not found."
                             });
                         }
-
+                        // })
                     } else {
-                        // Handle the case where the account is not found
-                        res.json({
+                        return res.json({
                             valid: false,
-                            message: "Account not found."
+                            message: "Email is required"
                         });
                     }
-                    // })
                 } else {
                     return res.json({
                         valid: false,
-                        message: "Email is required"
+                        message: "Expired session. Please log in again."
                     });
                 }
             })

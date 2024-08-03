@@ -1,14 +1,15 @@
+const env = require("../../../Config/Object ENV/Object ENV");
 
 
 
 
 const temPlateVerifyEmail = (username, email, verificationCode) => {
     const templateParams = {
-        from_name: process.env.EXPRESS__NAME__EMAIL__KEY__EMAIL,
+        from_name: env.EXPRESS_NAME_EMAIL_KEY_EMAIL,
         to: email,
         to_name: username,
         message: verificationCode,
-        reply_to: process.env.EXPRESS__REPLAY__EMAIL__KEY__EMAIL
+        reply_to: env.EXPRESS_REPLY_EMAIL_KEY_EMAIL
     };
     return templateParams;
 }

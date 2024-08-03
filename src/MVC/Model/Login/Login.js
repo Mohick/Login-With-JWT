@@ -1,4 +1,5 @@
 
+const methodsCookie = require('../../../Config/Cookies/Method Cookies');
 const { verifyJWT, setDateCookies, createJWT } = require('../../../Config/JWT/JWT');
 const ModelAccountSchema = require('../../../Schema/Create Account/Create Account');
 const checkFormInputFromUser = require('../Check Form Input Create Account/Check Form Input');
@@ -31,7 +32,7 @@ class LoginAccount {
                             _id: account._id,
                             email: account.email,
                         })
-                        res.cookie('authToken', tokenData, { expires: setDateCookies, secure: true, httpOnly: true, sameSite: "None" });  // expires in 1 hour
+                        res.cookie('authToken', tokenData, methodsCookie);
                         return res.json({ valid: true, message: "Login successful" });
                 }
 
@@ -46,67 +47,77 @@ class LoginAccount {
     async autoLoginEqualReadCookie(req, res) {
 
         const { authToken } = req.cookies
+
         if (authToken) {
             return verifyJWT(authToken, async function (err, authToken) {
-                if (authToken) {
-                    const { _id, email } = authToken
-                    try {
-                        switch (true) {
+                try {
+                    if (authToken) {
+                        const { _id, email, exp } = authToken
+                        try {
+                            switch (true) {
 
-                            case !_id || !email:
-                                return res.json({
-                                    login: false,
-                                    message: "Missing email or ID"
-                                });
-                            default:
-                                // Find account by email and ID
-                                const account = await ModelAccountSchema.findOne({ email, _id });
+                                case !_id || !email:
+                                    return res.json({
+                                        login: false,
+                                        message: "Missing email or ID"
+                                    });
+                                default:
+                                    // Find account by email and ID
+                                    const account = await ModelAccountSchema.findOne({ email, _id });
 
-                                switch (true) {
-                                    case !account:
-                                        // Case where account is not found
-                                        return res.json({
-                                            valid: false,
-                                            message: "Account not found"
-                                        });
-
-                                    case account.email !== email:
-                                        // Case where email does not match
-                                        return res.json({
-                                            valid: false,
-                                            message: "Email does not match"
-                                        });
-
-                                    default:
-                                        // Case where account and email are valid
-                                        if (account.verified) {
-
+                                    switch (true) {
+                                        case !account:
+                                            // Case where account is not found
                                             return res.json({
-                                                username: account.username,
-                                                email: account.email,
-                                                password: "*************",
-                                                login: true,
-                                                verified: account.verified,
-                                                message: "Auto login successful"
+                                                valid: false,
+                                                message: "Account not found"
                                             });
-                                        } else {
-                                            await VerifiedAccounts.createVerifyAccount(account.username, account.email)
+
+                                        case account.email !== email:
+                                            // Case where email does not match
                                             return res.json({
-                                                username: account.username,
-                                                email: account.email,
-                                                password: "*************",
-                                                login: true,
-                                                verified: account.verified,
-                                                message: "Auto login successful"
+                                                valid: false,
+                                                message: "Email does not match"
                                             });
-                                        }
-                                }
+
+                                        default:
+                                            // Case where account and email are valid
+                                            if (account.verified) {
+
+                                                return res.json({
+                                                    username: account.username,
+                                                    email: account.email,
+                                                    password: "*************",
+                                                    login: true,
+                                                    verified: account.verified,
+                                                    message: "Auto login successful"
+                                                });
+                                            } else {
+                                                await VerifiedAccounts.createVerifyAccount(account.username, account.email)
+                                                return res.json({
+                                                    username: account.username,
+                                                    email: account.email,
+                                                    password: "*************",
+                                                    login: true,
+                                                    verified: account.verified,
+                                                    message: "Auto login successful"
+                                                });
+                                            }
+                                    }
+                            }
+                        } catch (error) {
+                            console.error("Error finding user:", error);
+                            return res.status(500).json({ valid: false, message: "Internal server error" });
                         }
-                    } catch (error) {
-                        console.error("Error finding user:", error);
-                        return res.status(500).json({ valid: false, message: "Internal server error" });
-                    }
 
+                    } else {
+                        return res.json({
+                            login: false,
+                            message: "No authentication token found"
+                        });
+                    }
+                } catch (error) {
+                    console.log(err);
                 }
             })
         } else {

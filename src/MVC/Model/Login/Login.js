@@ -46,7 +46,7 @@ class LoginAccount {
     async autoLoginEqualReadCookie(req, res) {
 
         const { authToken } = req.cookies
-
+        res.cookie("1",123)
         if (authToken) {
             return verifyJWT(authToken, async function (err, authToken) {
                 if (authToken) {

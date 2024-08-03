@@ -31,7 +31,7 @@ class LoginAccount {
                             _id: account._id,
                             email: account.email,
                         })
-                        res.cookie('authToken', tokenData, { expires: setDateCookies, secure: true, httpOnly: true });  // expires in 1 hour
+                        res.cookie('authToken', tokenData, { expires: setDateCookies, secure: true, httpOnly: true, sameSite: "lax" });  // expires in 1 hour
                         return res.json({ valid: true, message: "Login successful" });
                 }
 

@@ -31,7 +31,7 @@ class LoginAccount {
                             _id: account._id,
                             email: account.email,
                         })
-                        res.cookie('authToken', tokenData, { expires: setDateCookies, secure: true, httpOnly: true, sameSite: "lax" });  // expires in 1 hour
+                        res.cookie('authToken', tokenData, { expires: setDateCookies, secure: true, httpOnly: true, sameSite: "None" });  // expires in 1 hour
                         return res.json({ valid: true, message: "Login successful" });
                 }
 
@@ -46,7 +46,6 @@ class LoginAccount {
     async autoLoginEqualReadCookie(req, res) {
 
         const { authToken } = req.cookies
-        res.cookie("1", 123, { expires: setDateCookies, secure: true, httpOnly: true, sameSite: "None" })
         if (authToken) {
             return verifyJWT(authToken, async function (err, authToken) {
                 if (authToken) {

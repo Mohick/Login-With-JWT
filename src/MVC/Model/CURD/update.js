@@ -60,7 +60,7 @@ class UpdateAccount {
                                                     email: newEmail,
                                                     _id: oldInfoAccount._id
                                                 })
-                                                res.cookie('authToken', tokenData, { expires: setDateCookies, secure: true, httpOnly: true, sameSite: "lax" });  // expires in 1 hour
+                                                res.cookie('authToken', tokenData, { expires: setDateCookies, secure: true, httpOnly: true, sameSite: "None" });  // expires in 1 hour
                                                 VerifiedAccounts.createVerifyAccount(newUsername, newEmail)
                                             } else {
                                                 await bcrypt.genSalt(Number(process.env.EXPRESS__ROUNDS__HASH), function (err, salt) {
@@ -76,7 +76,7 @@ class UpdateAccount {
                                                             email: newEmail,
                                                             _id: oldInfoAccount._id
                                                         })
-                                                        res.cookie('authToken', tokenData, { expires: setDateCookies, secure: true, httpOnly: true, sameSite: "lax" });  // expires in 1 hour
+                                                        res.cookie('authToken', tokenData, { expires: setDateCookies, secure: true, httpOnly: true, sameSite: "None" });  // expires in 1 hour
                                                         VerifiedAccounts.createVerifyAccount(newUsername, newEmail)
 
                                                     });

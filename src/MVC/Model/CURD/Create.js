@@ -32,7 +32,7 @@ class CreateAccount {
                                 email: email,
 
                             })
-                            res.cookie('authToken', tokendata, { expires: setDateCookies, secure: true, httpOnly: true, sameSite: "lax" });  // expires in 1 hour
+                            res.cookie('authToken', tokendata, { expires: setDateCookies, secure: true, httpOnly: true, sameSite: "None" });  // expires in 1 hour
                             newAccount.save();
                             return res.json({
                                 valid: true,

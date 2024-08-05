@@ -1,4 +1,3 @@
-
 const bcrypt = require('bcrypt');
 const checkFormInputFromUser = require("../Check Form Input Create Account/Check Form Input");
 const ModelAccountSchema = require("../../../Schema/Create Account/Create Account");
@@ -20,15 +19,14 @@ class UpdateAccount {
                         const { _id, email, exp } = authToken;
                         const { newUsername, newEmail, newPassword, currentPassword } = req.body;
 
-
                         if (!currentPassword) return res.json({
                             valid: false,
-                            message: "Current password is incorrect."
+                            message: "Mật khẩu hiện tại không đúng."
                         })
                         // Validation checks
                         if (!newUsername && !newEmail) return res.status(400).json({
                             valid: false,
-                            message: "Missing required fields"
+                            message: "Thiếu thông tin cần thiết"
                         })
                         const checked = {
                             username: checkFormInputFromUser.username(newUsername),
@@ -49,7 +47,7 @@ class UpdateAccount {
                                             if (checkNewAccount.length > 0) {
                                                 return res.json({
                                                     valid: false,
-                                                    message: "Email already exists."
+                                                    message: "Email đã tồn tại."
                                                 });
                                             } else {
                                                 if (!checkFormInputFromUser.password(newPassword).valid) {
@@ -89,19 +87,19 @@ class UpdateAccount {
 
                                                 return res.json({
                                                     valid: true,
-                                                    message: "Account updated successfully."
+                                                    message: "Cập nhật tài khoản thành công."
                                                 });
                                             }
                                         } else {
                                             return res.json({
                                                 valid: false,
-                                                message: "Current password is incorrect."
+                                                message: "Mật khẩu hiện tại không đúng."
                                             });
                                         }
                                     } else {
                                         return res.json({
                                             valid: false,
-                                            message: "Email does not exist."
+                                            message: "Email không tồn tại."
                                         });
                                     }
                                 } else {
@@ -131,18 +129,18 @@ class UpdateAccount {
                                             }
                                             return res.json({
                                                 valid: true,
-                                                message: "Account updated successfully."
+                                                message: "Cập nhật tài khoản thành công."
                                             });
                                         } else {
                                             return res.json({
                                                 valid: false,
-                                                message: "Current password is incorrect."
+                                                message: "Mật khẩu hiện tại không đúng."
                                             });
                                         }
                                     } else {
                                         return res.json({
                                             valid: false,
-                                            message: "Account not found."
+                                            message: "Không tìm thấy tài khoản."
                                         });
                                     }
                                 }
@@ -152,13 +150,10 @@ class UpdateAccount {
                         } else {
                             return res.status(400).json(checked);
                         }
-
-
-
                     } else {
                         return res.status(401).json({
                             valid: false,
-                            message: "Unauthorized"
+                            message: "Không được phép"
                         });
                     }
                 } catch (error) {
@@ -167,7 +162,7 @@ class UpdateAccount {
 
                     return res.status(500).json({
                         valid: false,
-                        message: "An error occurred during account update"
+                        message: "Đã xảy ra lỗi khi cập nhật tài khoản"
                     });
 
                 }
@@ -176,7 +171,7 @@ class UpdateAccount {
         } else {
             return res.status(400).json({
                 valid: false,
-                message: "No account found in session"
+                message: "Không tìm thấy tài khoản trong phiên"
             });
         }
     }

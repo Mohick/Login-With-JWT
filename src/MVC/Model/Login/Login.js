@@ -1,11 +1,9 @@
-
 const methodsCookie = require('../../../Config/Cookies/Method Cookies');
 const { verifyJWT, setDateCookies, createJWT } = require('../../../Config/JWT/JWT');
 const ModelAccountSchema = require('../../../Schema/Create Account/Create Account');
 const checkFormInputFromUser = require('../Check Form Input Create Account/Check Form Input');
 const VerifiedAccounts = require('../Verify Account/Verify')
 const bcrypt = require('bcrypt');
-
 
 class LoginAccount {
     async login(req, res) {
@@ -25,7 +23,7 @@ class LoginAccount {
                     case !account:
                     case !(await bcrypt.compare(password, account.password)):
                         // Nếu mật khẩu không khớp
-                        return res.status(200).json({ valid: false, message: "Invalid password" });
+                        return res.status(200).json({ valid: false, message: "Mật khẩu không hợp lệ" });
                     default:
                         // Nếu mọi thứ đều đúng
                         const tokenData = createJWT({
@@ -33,15 +31,15 @@ class LoginAccount {
                             email: account.email,
                         })
                         res.cookie('authToken', tokenData, methodsCookie);
-                        return res.json({ valid: true, message: "Login successful" });
+                        return res.json({ valid: true, message: "Đăng nhập thành công" });
                 }
 
             } catch (error) {
-                console.error("Error finding user:", error);
-                return res.status(500).json({ valid: false, message: "Internal server error" });
+                console.error("Lỗi tìm tài khoản:", error);
+                return res.status(500).json({ valid: false, message: "Lỗi máy chủ nội bộ" });
             }
         } else {
-            return res.status(400).json({ valid: false, message: "Invalid email or password format" });
+            return res.status(400).json({ valid: false, message: "Định dạng email hoặc mật khẩu không hợp lệ" });
         }
     }
     async autoLoginEqualReadCookie(req, res) {
@@ -59,7 +57,7 @@ class LoginAccount {
                                 case !_id || !email:
                                     return res.json({
                                         login: false,
-                                        message: "Missing email or ID"
+                                        message: "Thiếu email hoặc ID"
                                     });
                                 default:
                                     // Find account by email and ID
@@ -67,21 +65,21 @@ class LoginAccount {
 
                                     switch (true) {
                                         case !account:
-                                            // Case where account is not found
+                                            // Trường hợp không tìm thấy tài khoản
                                             return res.json({
                                                 valid: false,
-                                                message: "Account not found"
+                                                message: "Không tìm thấy tài khoản"
                                             });
 
                                         case account.email !== email:
-                                            // Case where email does not match
+                                            // Trường hợp email không khớp
                                             return res.json({
                                                 valid: false,
-                                                message: "Email does not match"
+                                                message: "Email không khớp"
                                             });
 
                                         default:
-                                            // Case where account and email are valid
+                                            // Trường hợp tài khoản và email hợp lệ
                                             if (account.verified) {
 
                                                 return res.json({
@@ -90,7 +88,7 @@ class LoginAccount {
                                                     password: "*************",
                                                     login: true,
                                                     verified: account.verified,
-                                                    message: "Auto login successful"
+                                                    message: "Đăng nhập tự động thành công"
                                                 });
                                             } else {
                                                 await VerifiedAccounts.createVerifyAccount(account.username, account.email)
@@ -100,20 +98,20 @@ class LoginAccount {
                                                     password: "*************",
                                                     login: true,
                                                     verified: account.verified,
-                                                    message: "Auto login successful"
+                                                    message: "Đăng nhập tự động thành công"
                                                 });
                                             }
                                     }
                             }
                         } catch (error) {
-                            console.error("Error finding user:", error);
-                            return res.status(500).json({ valid: false, message: "Internal server error" });
+                            console.error("Lỗi tìm tài khoản:", error);
+                            return res.status(500).json({ valid: false, message: "Lỗi máy chủ nội bộ" });
                         }
 
                     } else {
                         return res.json({
                             login: false,
-                            message: "No authentication token found"
+                            message: "Không tìm thấy token xác thực"
                         });
                     }
                 } catch (error) {
@@ -123,10 +121,10 @@ class LoginAccount {
         } else {
             return res.json({
                 login: false,
-                message: "No account found in session"
+                message: "Không tìm thấy tài khoản trong phiên"
             });
         }
     }
 }
 
-module.exports = new LoginAccount();
+module.exports = new LoginAccount;

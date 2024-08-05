@@ -18,7 +18,7 @@ class CreateAccount {
             try {
                 const account = await ModelAccountSchema.find({ email });
                 if (account.length > 0) {
-                    return res.json({ valid: false, message: "Email already exists." });
+                    return res.json({ valid: false, message: "Email đã tồn tại." });
                 } else {
                     // Hash the password using bcrypt
                     // Create new account
@@ -32,21 +32,19 @@ class CreateAccount {
                             const tokendata = createJWT({
                                 _id: newAccount._id.toString(),
                                 email: email,
-
                             })
                             res.cookie('authToken', tokendata, methodsCookie);  // expires in 1 hour
                             newAccount.save();
                             return res.json({
                                 valid: true,
-                                message: "Account created successfully. Please verify your email address."
+                                message: "Tài khoản đã được tạo thành công. Vui lòng xác minh địa chỉ email của bạn."
                             });
-
                         });
                     });
                 }
             } catch (error) {
-                console.error("Error finding user:", error);
-                return res.json({ valid: false, message: "An error occurred while processing your request." });
+                console.error("Lỗi khi tìm người dùng:", error);
+                return res.json({ valid: false, message: "Đã xảy ra lỗi khi xử lý yêu cầu của bạn." });
             }
         } else {
             return res.json(checked);
@@ -54,4 +52,4 @@ class CreateAccount {
     }
 }
 
-module.exports = new CreateAccount();
+module.exports = new CreateAccount;

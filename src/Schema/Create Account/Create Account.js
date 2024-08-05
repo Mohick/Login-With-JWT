@@ -8,7 +8,8 @@ const CreateAccountSchema = new Schema({
     username: String,  // Corrected typo here
     password: String,
     email: String,
-    verified: { type: Boolean, default: false }
+    verified: { type: Boolean, default: false },
+    createdAt: { type: Date, default: Date.now, index: { expires: '1w' } }
 }, {
     timestamps: true  // This adds createdAt and updatedAt fields
 });

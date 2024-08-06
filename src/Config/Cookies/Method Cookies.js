@@ -5,8 +5,9 @@ const env = require("../Object ENV/Object ENV");
 
 const methodsCookie = {
     expires: setDateCookies,
-    secure: JSON.parse(env.EXPRESS_COOKIES_SECURE),
-    httpOnly: JSON.parse(env.EXPRESS_COOKIES_ONLYHTTP), sameSite: "None"
+    secure: `${env.EXPRESS_COOKIES_SECURE}`.trim().toLowerCase() == "true".trim().toLowerCase(),
+    httpOnly: `${env.EXPRESS_COOKIES_ONLYHTTP}`.trim().toLowerCase() == "true".trim().toLowerCase(),
+    sameSite: "None"
 }
 
 

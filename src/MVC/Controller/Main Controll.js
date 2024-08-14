@@ -9,9 +9,10 @@ const mainController = (app) => {
     app.put("/verify-account", VerifiedAccount.verifiedAccount)
     app.post("/re-new-verify", VerifiedAccount.reNewVerify)
     app.post("/login", Login.login)
-    app.put("/update-account",UpdateAccount.update)
-    app.get("/automatic-login",Login.autoLoginEqualReadCookie)
+    app.put("/update-account", UpdateAccount.update)
+    app.get("/automatic-login", Login.autoLoginEqualReadCookie)
     app.post("/logout", LogoutAccount.logout)
+    app.post("/login-email", Login.loginWithGoogle)
 }
 
 

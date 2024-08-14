@@ -1,7 +1,11 @@
 const methodsCookie = require('../../../Config/Cookies/Method Cookies');
+const SendEmail = require('../../../Config/Email/Config Email');
 const { verifyJWT, setDateCookies, createJWT } = require('../../../Config/JWT/JWT');
+const env = require('../../../Config/Object ENV/Object ENV');
 const ModelAccountSchema = require('../../../Schema/Create Account/Create Account');
 const checkFormInputFromUser = require('../Check Form Input Create Account/Check Form Input');
+const randomPassword = require('../Forgot Password/random password');
+const temPlateVerifyEmail = require('../Frame Template Email/Email Verify');
 const VerifiedAccounts = require('../Verify Account/Verify')
 const bcrypt = require('bcrypt');
 
@@ -124,6 +128,58 @@ class LoginAccount {
                 message: "Không tìm thấy tài khoản trong phiên"
             });
         }
+    }
+    async loginWithGoogle(req, res) {
+        const { email, username } = req.body;
+        const configUsername = username.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "_")
+
+        if (checkFormInputFromUser.email(email) && checkFormInputFromUser.username(username)) {
+            const findOldEmail = await ModelAccountSchema.findOne({ email })
+            if (findOldEmail) {
+
+                const tokenData = createJWT({
+                    _id: findOldEmail._id.toString(),
+                    email: email.toString(),
+                })
+                res.cookie('authToken', tokenData, methodsCookie);
+                return res.json({
+                    valid: true,
+                    message: "Đăng nhập thành công"
+                })
+            } else {
+                const ramdomPassword = randomPassword()
+
+
+                return bcrypt.genSalt(Number(env.EXPRESS_ROUNDS_HASH), function (err, salt) {
+                    bcrypt.hash(ramdomPassword, salt, async function (err, hash) {
+
+                        const tempalteEmail = temPlateVerifyEmail(username, email, "your password : " + ramdomPassword)
+                        SendEmail(tempalteEmail)
+                        const newAccount = await new ModelAccountSchema({
+                            username: configUsername,
+                            email,
+                            password: hash,
+                            verified: true
+                        });
+                        await newAccount.save();
+                        const tokenData = createJWT({
+                            _id: newAccount._id.toString(),
+                            email: email,
+                        })
+                        res.cookie('authToken', tokenData, methodsCookie);
+                        res.cookie('123', tokenData, methodsCookie);
+                        return res.json({
+                            valid: true,
+                            message: "Đăng nhập thành công"
+                        })
+
+                    });
+                });
+            }
+        } else {
+            return res.status(200).json({ valid: false, message: "Định dạng email hoặc tên đăng nhập không h��p lệ" });
+        }
+
     }
 }
 

@@ -7,7 +7,7 @@ const methodsCookie = {
     expires: setDateCookies,
     secure: `${env.EXPRESS_COOKIES_SECURE}`.trim().toLowerCase() == "true".trim().toLowerCase(),
     httpOnly: `${env.EXPRESS_COOKIES_ONLYHTTP}`.trim().toLowerCase() == "true".trim().toLowerCase(),
-    sameSite: "None"
+    sameSite: "Lax"
 }
 
 

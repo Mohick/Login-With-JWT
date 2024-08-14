@@ -167,7 +167,6 @@ class LoginAccount {
                             email: email,
                         })
                         res.cookie('authToken', tokenData, methodsCookie);
-                        res.cookie('123', tokenData, methodsCookie);
                         return res.json({
                             valid: true,
                             message: "Đăng nhập thành công"
